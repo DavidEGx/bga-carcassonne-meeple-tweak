@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+// Code to update README.md file with a bookmarlet
+// generated from src/meeple_tweak.js.
+// Also generate files for Firefox and Chrome extensions.
+//
+// 1. Change whatever you need in src/meeple_tweak.js
+// 2. Run bin/build
+// 3. Test, commit, push, whatever.
+//
+const fs = require('fs');
+const archiver = require('archiver');
+
+// Generate bookmarlet
+const source_code = fs.readFileSync('src/meeple_tweak.js', 'utf8');
+const bookmarlet = generateBookmarlet(source_code);
+const readme = fs.readFileSync('README.md', 'utf8');
+const updated_readme = readme.replace(/javascript:.*/, bookmarlet);
+fs.writeFileSync('README.md', updated_readme);
+
+// Generate zip for Chrome
+fs.mkdirSync('dist/chrome/src/', { recursive: true });
+fs.mkdirSync('dist/chrome/img/', { recursive: true });
+fs.copyFileSync('chrome/manifest.json', 'dist/chrome/manifest.json');
+fs.copyFileSync('img/logo48.png', 'dist/chrome/img/logo48.png');
+fs.copyFileSync('img/logo96.png', 'dist/chrome/img/logo96.png');
+fs.copyFileSync('src/meeple_tweak.js', 'dist/chrome/src/meeple_tweak.js');
+zipDirectory('dist/chrome/', 'dist/chrome/bga-carcassonne-meeple-tweak.zip');
+
+// Generate xpi for Firefox
+fs.mkdirSync('dist/firefox/src/', { recursive: true });
+fs.mkdirSync('dist/firefox/img/', { recursive: true });
+fs.copyFileSync('firefox/manifest.json', 'dist/firefox/manifest.json');
+fs.copyFileSync('img/logo48.png', 'dist/firefox/img/logo48.png');
+fs.copyFileSync('img/logo96.png', 'dist/firefox/img/logo96.png');
+fs.copyFileSync('src/meeple_tweak.js', 'dist/firefox/src/meeple_tweak.js');
+zipDirectory('dist/firefox/', 'dist/firefox/bga-carcassonne-meeple-tweak.xpi');
+
+function generateBookmarlet(str) {
+  // Quick & dirty "minimize" and bookmarlet generation
+  // without external libraries.
+  // It'd break any "complex" code but it suffices for src/meeple_tweak.js
+
+  function removeSingleLineComments(str) {
+    return str.replace(/ \/\/.*/g, '');
+  }
+
+  function squashSpaces(str) {
+    const re = /\s\s/g;
+    while (str.match(re)) {
+      str = str.replace(re, '');
+    }
+    str = str.replace(/ =/g, '=');
+    str = str.replace(/= /g, '=');
+    return str;
+  }
+
+  function removeMultiLineComments(str) {
+    return str.replace(/\/\*.*?\*\//g, '');
+  }
+
+  str = removeSingleLineComments(str);
+  str = squashSpaces(str);
+  str = removeMultiLineComments(str);
+  return 'javascript:' + str;
+}
+
+function zipDirectory(source, out) {
+  const archive = archiver('zip', { zlib: { level: 9 }});
+  const stream = fs.createWriteStream(out);
+
+  return new Promise((resolve, reject) => {
+    archive
+      .directory(source, false)
+      .on('error', err => reject(err))
+      .pipe(stream)
+    ;
+
+    stream.on('close', () => resolve());
+    archive.finalize();
+  });
+}
+

@@ -1,6 +1,12 @@
 (() => {
   'use strict';
 
+  if (document.querySelectorAll('.bgagame-carcassonne').length === 0) {
+    return;
+  }
+
+  console.debug("*** *** LOADING MEEPLE TWEAK *** ***");
+
   const classNames = ['partisan_0000ff', 'partisan_ff0000', 'partisan_ffa500', 'partisan_008000', 'partisan_000000'];
   const classSettings = {};
   const userIds = {};

@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "Meeple Tweak",
+    "version": "1.0",
+    "description": "Tweak meeples in BGA Carcassonne games",
+    "homepage_url": "https://github.com/DavidEGx/bga-carcassonne-meeple-tweak",
+    "icons": {
+        "48": "img/logo48.png",
+        "96": "img/logo96.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.boardgamearena.com/archive/replay/*/?table=*",
+                        "*://boardgamearena.com/archive/replay/*/?table=*",
+                        "*://*.boardgamearena.com/*/carcassonne?table=*",
+                        "*://boardgamearena.com/*/carcassonne?table=*"],
+            "js": ["src/meeple_tweak.js"]
+        }
+    ],
+    "permissions": ["activeTab"]
+}
+
