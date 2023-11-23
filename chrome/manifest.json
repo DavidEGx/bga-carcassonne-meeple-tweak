@@ -14,9 +14,9 @@
                         "*://boardgamearena.com/archive/replay/*/?table=*",
                         "*://*.boardgamearena.com/*/carcassonne?table=*",
                         "*://boardgamearena.com/*/carcassonne?table=*"],
-            "js": ["src/meeple_tweak.js"]
+            "js": ["src/meeple_tweak.js"],
+            "run_at": "document_idle"
         }
-    ],
-    "permissions": ["activeTab"]
+    ]
 }
 

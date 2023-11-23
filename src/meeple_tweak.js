@@ -354,6 +354,9 @@
     console.debug(`Apply custom style for ${className}`);
 
     const settings = classSettings[className];
+    if (!settings) {
+      return;
+    }
     const elements = document.getElementsByClassName(className);
     const newBGColor = `rgba(${settings.rBackground}, ${settings.gBackground}, ${settings.bBackground}, ${settings.aBackground})`;
     const filter = `hue-rotate(${settings.hMeeple}deg) saturate(${settings.sMeeple})`;
